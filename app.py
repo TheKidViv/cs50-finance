@@ -71,7 +71,11 @@ def buy():
             return apology("Must enter a symbol", 400)
         ticker = lookup(request.form.get("symbol"))
         price = ticker["price"]
-        shares = int(request.form.get("shares"))
+        try:
+            shares = int(request.form.get("shares"))
+        except (ValueError):
+            return apology("share count must be a postitive integer")
+            
         if not ticker:
             return apology("Invalid symbol", 400)
         else:
@@ -209,9 +213,11 @@ def register():
     if request.method == "POST":
 
         # Ensure username was submitted
+        
         if not request.form.get("username"):
             return apology("must provide username", 403)
-
+        if request.form.get("username") == None:
+            return apology("must enter in a username", 400)
         # Ensure password was submitted
         elif not request.form.get("password"):
             return apology("must provide password", 403)
@@ -219,7 +225,11 @@ def register():
         # Ensure confirmed-password is the same
         elif request.form.get("password") != request.form.get("confirmation"):
             return apology("passwords must match", 400)
-
+        
+        usernames_db = db.execute("SELECT username FROM users")
+        for row in usernames_db:
+            if request.form.get("username") == row["username"]:
+                return apology("username already taken", 400)
         # Get username and hash password
         username = request.form.get("username")
         password_hash = generate_password_hash(request.form.get("password"))
