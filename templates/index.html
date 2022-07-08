@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log In
+{% endblock %}
+
+{% block main %}
+    <table class="table">
+        <thead>
+            <th>Time</th>
+            <th>Symbol</th>
+            <th>Shares</th>
+            <th>Price</th>
+            <th>Total</th>
+        </thead>
+        <tbody>
+            {% for row in transactions %}
+            <tr>
+                <td>{{row["time"]}}</td>
+                <td>{{row["symbol"]}}</td>
+                <td>{{row["shares"]}}</td>
+                <td>{{row["price"] | usd()}}</td>
+                {% if row["total"] < 0 %}
+                <td>{{(row["total"] * -1)| usd()}}</td>
+                {% else %}
+                <td>{{row["total"]| usd()}}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <th>Cash</th>
+                <td>{{cash | usd()}}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <th>Total</th>
+                <th>{{total_value | usd()}}</th>
+            </tr>
+        </tfoot>
+    </table>
+{% endblock %}
