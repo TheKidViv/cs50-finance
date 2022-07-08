@@ -5,5 +5,5 @@
 {% endblock %}
 
 {% block main %}
-    <h1 style:"text-align: center">{{quote["name"]}} ({{quote["symbol"]}} : ${{quote["price"]}})</h1>
+    <h1 style:"text-align: center">{{quote["name"]}} ({{quote["symbol"]}} : {{quote["price"] | usd()}})</h1>
 {% endblock %}
