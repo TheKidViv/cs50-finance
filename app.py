@@ -214,7 +214,7 @@ def register():
         # Ensure username was submitted
         
         if not request.form.get("username"):
-            return apology("must provide username", 403)
+            return apology("must provide username", 400)
         if request.form.get("username") == None:
             return apology("must enter in a username", 400)
         # Ensure password was submitted
