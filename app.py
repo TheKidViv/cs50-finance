@@ -57,7 +57,7 @@ def index():
     for row in value_of_shares:
         total_value += row["SUM(total)"]
     total_value += cash
-    return render_template("index.html", cash = cash, transactions = transactions, total_value = total_value, usd = usd)
+    return render_template("index.html", cash=cash, transactions=transactions, total_value=total_value, usd=usd)
     
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -95,8 +95,8 @@ def buy():
             
             db.execute("UPDATE users SET cash = ? WHERE id = ?", new_cash, user_id)
             
-
-            db.execute("INSERT INTO transactions(user_id, symbol, price, shares, total, time) VALUES (?, ?, ?, ?, ?, ?)", user_id, symbol, price, shares, value, (datetime.now()))
+            db.execute("INSERT INTO transactions(user_id, symbol, price, shares, total, time) VALUES (?, ?, ?, ?, ?, ?)",
+                       user_id, symbol, price, shares, value, (datetime.now()))
             
             flash("Purchase Successful")    
              
@@ -107,14 +107,13 @@ def buy():
         return render_template("buy.html")
 
 
-
 @app.route("/history")
 @login_required
 def history():
     user_id = session["user_id"]
     """Show history of transactions"""
     history = db.execute("SELECT * FROM transactions WHERE user_id=?", user_id)
-    return render_template("history.html", history = history)
+    return render_template("history.html", history=history)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -152,9 +151,11 @@ def login():
     else:
         return render_template("login.html")
 
+
 @app.route("/toreset", methods=["POST"])
 def toreset():
-        return render_template("reset.html")
+    return render_template("reset.html")
+
 
 @app.route("/reset")
 def reset():
@@ -201,13 +202,9 @@ def quote():
         return render_template("quote.html")
 
 
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
-    # Forget any user_id
-    #session.clear()
-
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
 
@@ -270,11 +267,12 @@ def sell():
             user_id = session["user_id"]
             cash_db = db.execute("SELECT cash FROM users WHERE id=?", user_id)
             if len(cash_db) > 0:
-                    cash = cash_db[0]["cash"]
+                cash = cash_db[0]["cash"]
             
-            shares_db = db.execute("SELECT SUM(shares) FROM transactions WHERE user_id=? AND symbol=? GROUP BY symbol", user_id, symbol)
+            shares_db = db.execute(
+                "SELECT SUM(shares) FROM transactions WHERE user_id=? AND symbol=? GROUP BY symbol", user_id, symbol)
             if len(shares_db) > 0:
-                    real_shares = int(shares_db[0]["SUM(shares)"])
+                real_shares = int(shares_db[0]["SUM(shares)"])
             if shares > real_shares:
                 return apology("Insufficient Shares", 400)
             if shares <= 0:
@@ -286,7 +284,8 @@ def sell():
                 
                 db.execute("UPDATE users SET cash = ? WHERE id = ?", new_cash, user_id)
                 
-                db.execute("INSERT INTO transactions(user_id, symbol, price, shares, total, time) VALUES (?, ?, ?, ?, ?, ?)", user_id, symbol, price, (shares*-1), (value * -1), (datetime.now()))
+                db.execute("INSERT INTO transactions(user_id, symbol, price, shares, total, time) VALUES (?, ?, ?, ?, ?, ?)",
+                           user_id, symbol, price, (shares*-1), (value*-1), (datetime.now()))
                 
                 flash("Sold")    
                  
@@ -298,4 +297,4 @@ def sell():
         symbols_list = []
         for row in symbols:
             symbols_list.append(row["symbol"])
-        return render_template("sell.html", symbols = symbols_list)
+        return render_template("sell.html", symbols=symbols_list)
