@@ -70,38 +70,37 @@ def buy():
         if not symbol:
             return apology("Must enter a symbol", 400)
         ticker = lookup(request.form.get("symbol"))
+        if not ticker:
+            return apology("Invalid symbol", 400)
         price = ticker["price"]
         try:
             shares = int(request.form.get("shares"))
         except (ValueError):
             return apology("share count must be a postitive integer")
-            
-        if not ticker:
-            return apology("Invalid symbol", 400)
-        else:
-            if shares <= 0:
-                return apology("Non-positive share count", 400)
-            else:
-                user_id = session["user_id"]
-                cash_db = db.execute("SELECT cash FROM users WHERE id=?", user_id)
-                if len(cash_db) > 0:
-                    cash = cash_db[0]["cash"]
-                
-                value = price * shares
-                
-                if cash < value:
-                    return apology("Insufficient funds")
-                
-                new_cash = cash - value
-                
-                db.execute("UPDATE users SET cash = ? WHERE id = ?", new_cash, user_id)
-                
 
-                db.execute("INSERT INTO transactions(user_id, symbol, price, shares, total, time) VALUES (?, ?, ?, ?, ?, ?)", user_id, symbol, price, shares, value, (datetime.now()))
-                
-                flash("Purchase Successful")    
-                 
-                return redirect("/")
+        if shares <= 0:
+            return apology("Non-positive share count", 400)
+        else:
+            user_id = session["user_id"]
+            cash_db = db.execute("SELECT cash FROM users WHERE id=?", user_id)
+            if len(cash_db) > 0:
+                cash = cash_db[0]["cash"]
+            
+            value = price * shares
+            
+            if cash < value:
+                return apology("Insufficient funds")
+            
+            new_cash = cash - value
+            
+            db.execute("UPDATE users SET cash = ? WHERE id = ?", new_cash, user_id)
+            
+
+            db.execute("INSERT INTO transactions(user_id, symbol, price, shares, total, time) VALUES (?, ?, ?, ?, ?, ?)", user_id, symbol, price, shares, value, (datetime.now()))
+            
+            flash("Purchase Successful")    
+             
+            return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
