@@ -219,7 +219,7 @@ def register():
             return apology("must enter in a username", 400)
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return apology("must provide password", 403)
+            return apology("must provide password", 400)
 
         # Ensure confirmed-password is the same
         elif request.form.get("password") != request.form.get("confirmation"):
